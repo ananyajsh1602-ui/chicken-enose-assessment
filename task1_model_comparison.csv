@@ -1,0 +1,5 @@
+,Accuracy (%),Precision (%),Recall (%),F1-Score (%)
+LSTM,67.84,74.4,68.8,66.14
+Temporal CNN (TCN),67.86,71.32,68.57,65.97
+Transformer,69.05,73.47,69.82,67.55
+Hybrid (Conv1D-LSTM),70.93,75.36,71.41,69.88
