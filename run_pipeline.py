@@ -17,7 +17,7 @@ import seaborn as sns
 from data_preprocessing import load_and_preprocess_data, prepare_sequence_data, CLASS_NAMES
 from task1_models import evaluate_all_temporal_models, train_and_save_best_model
 from task2_validation import perform_statistical_validation, simulate_and_validate_microbial_chemical_markers
-from shelf_life_estimator import compute_shelf_life_targets, train_and_evaluate_shelf_life_regressor, predict_sample_shelf_life
+# from shelf_life_estimator import compute_shelf_life_targets, train_and_evaluate_shelf_life_regressor, predict_sample_shelf_life
 
 def run_master_pipeline():
     print("\n" + "="*70)
@@ -58,14 +58,14 @@ def run_master_pipeline():
     print("Saved 'task2_freshness_validation_markers.csv'")
 
     # 4. Task 3: Remaining Shelf-Life & Freshness Duration Estimation (RUL)
-    print("\n" + "="*70)
-    print("  TASK 3: REMAINING SHELF-LIFE & FRESHNESS DURATION ESTIMATION (RUL)  ")
-    print("="*70)
-    rfh_true, rsh_true, rdays_true = compute_shelf_life_targets(df_clean)
-    shelf_life_model, shelf_metrics = train_and_evaluate_shelf_life_regressor(X, rfh_true, rsh_true, groups)
-    import joblib
-    joblib.dump(shelf_life_model, 'saved_model/shelf_life_model.pkl')
-    print("[Save] Shelf life regressor saved to 'saved_model/shelf_life_model.pkl'")
+    # print("\n" + "="*70)
+    # print("  TASK 3: REMAINING SHELF-LIFE & FRESHNESS DURATION ESTIMATION (RUL)  ")
+    # print("="*70)
+    # rfh_true, rsh_true, rdays_true = compute_shelf_life_targets(df_clean)
+    # shelf_life_model, shelf_metrics = train_and_evaluate_shelf_life_regressor(X, rfh_true, rsh_true, groups)
+    # import joblib
+    # joblib.dump(shelf_life_model, 'saved_model/shelf_life_model.pkl')
+    # print("[Save] Shelf life regressor saved to 'saved_model/shelf_life_model.pkl'")
 
     
     # Generate live predictions table across representative classes
@@ -138,41 +138,41 @@ def run_master_pipeline():
     plt.savefig('plots/task2_bio_chemical_validation.png', dpi=300)
     plt.close()
 
-    # Figure 3: Task 3 Shelf-Life & Freshness Duration Estimation Diagnostics
-    fig3, axes3 = plt.subplots(1, 2, figsize=(14, 5))
+    # # Figure 3: Task 3 Shelf-Life & Freshness Duration Estimation Diagnostics
+    # fig3, axes3 = plt.subplots(1, 2, figsize=(14, 5))
     
-    # Subplot 1: True vs Predicted Safe Hours Parity Plot
-    sample_sub = df_shelf_export.sample(n=min(2000, len(df_shelf_export)), random_state=42)
-    axes3[0].scatter(sample_sub['true_safe_hours'], sample_sub['pred_safe_hours'], alpha=0.3, color='#1f77b4', s=20)
-    max_h = max(sample_sub['true_safe_hours'].max(), sample_sub['pred_safe_hours'].max())
-    axes3[0].plot([0, max_h], [0, max_h], 'r--', label='Ideal 1:1 Agreement')
-    axes3[0].set_title(f'Remaining Safe Hours: Predicted vs True (MAE: ±{shelf_metrics["safe_hours_mae"]:.2f}h)', fontsize=11)
-    axes3[0].set_xlabel('True Remaining Safe Hours')
-    axes3[0].set_ylabel('Predicted Remaining Safe Hours')
-    axes3[0].grid(True, linestyle=':', alpha=0.6)
-    axes3[0].legend()
+    # # Subplot 1: True vs Predicted Safe Hours Parity Plot
+    # sample_sub = df_shelf_export.sample(n=min(2000, len(df_shelf_export)), random_state=42)
+    # axes3[0].scatter(sample_sub['true_safe_hours'], sample_sub['pred_safe_hours'], alpha=0.3, color='#1f77b4', s=20)
+    # max_h = max(sample_sub['true_safe_hours'].max(), sample_sub['pred_safe_hours'].max())
+    # axes3[0].plot([0, max_h], [0, max_h], 'r--', label='Ideal 1:1 Agreement')
+    # axes3[0].set_title(f'Remaining Safe Hours: Predicted vs True (MAE: ±{shelf_metrics["safe_hours_mae"]:.2f}h)', fontsize=11)
+    # axes3[0].set_xlabel('True Remaining Safe Hours')
+    # axes3[0].set_ylabel('Predicted Remaining Safe Hours')
+    # axes3[0].grid(True, linestyle=':', alpha=0.6)
+    # axes3[0].legend()
     
     # Subplot 2: Refrigerated Shelf-Life (Days at 4°C) Distribution by Quality Class
-    sns.boxplot(x='true_label', y='pred_chilled_days_4C', hue='true_label', data=sample_sub, ax=axes3[1], palette='YlGnBu', legend=False)
-    axes3[1].set_title('Predicted Refrigerated Shelf-Life at 4°C (Days) by Class', fontsize=11)
-    axes3[1].set_xlabel('Freshness Class')
-    axes3[1].set_ylabel('Estimated Chilled Days Remaining')
-    axes3[1].grid(axis='y', linestyle=':', alpha=0.6)
+    # sns.boxplot(x='true_label', y='pred_chilled_days_4C', hue='true_label', data=sample_sub, ax=axes3[1], palette='YlGnBu', legend=False)
+    # axes3[1].set_title('Predicted Refrigerated Shelf-Life at 4°C (Days) by Class', fontsize=11)
+    # axes3[1].set_xlabel('Freshness Class')
+    # axes3[1].set_ylabel('Estimated Chilled Days Remaining')
+    # axes3[1].grid(axis='y', linestyle=':', alpha=0.6)
     
-    plt.suptitle('Task 3: Remaining Shelf-Life (RUL) & Refrigerated Duration Estimation', fontsize=13, y=1.02)
-    plt.tight_layout()
-    plt.savefig('plots/task3_shelf_life_estimation.png', dpi=300)
-    plt.close()
+    # plt.suptitle('Task 3: Remaining Shelf-Life (RUL) & Refrigerated Duration Estimation', fontsize=13, y=1.02)
+    # plt.tight_layout()
+    # plt.savefig('plots/task3_shelf_life_estimation.png', dpi=300)
+    # plt.close()
     
-    print("Plots successfully saved in 'plots/' directory (including 'task3_shelf_life_estimation.png')!")
-    print("\n" + "="*70)
-    # Save deployment model (Hybrid Conv1D-LSTM trained on full data)
-    print("\n[Deployment] Saving best model for real-time inference...")
-    train_and_save_best_model(X_seq, y_seq, save_dir='saved_model',
-                               model_name='Hybrid (Conv1D-LSTM)', epochs=40)
+    # print("Plots successfully saved in 'plots/' directory (including 'task3_shelf_life_estimation.png')!")
+    # print("\n" + "="*70)
+    # # Save deployment model (Hybrid Conv1D-LSTM trained on full data)
+    # print("\n[Deployment] Saving best model for real-time inference...")
+    # train_and_save_best_model(X_seq, y_seq, save_dir='saved_model',
+    #                            model_name='Hybrid (Conv1D-LSTM)', epochs=40)
 
-    print("  ALL PIPELINE EXECUTION STEPS COMPLETED SUCCESSFULLY!  ")
-    print("="*70)
+    # print("  ALL PIPELINE EXECUTION STEPS COMPLETED SUCCESSFULLY!  ")
+    # print("="*70)
 
 if __name__ == '__main__':
     run_master_pipeline()
